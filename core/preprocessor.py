@@ -15,6 +15,7 @@ Design Rationale:
 
 import pandas as pd
 import numpy as np
+from pandas.api.types import is_numeric_dtype
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
@@ -54,19 +55,21 @@ def clean_and_scale_data(df: pd.DataFrame, target_col: str, train_size: float = 
     
     # 3. Impute missing values in Target (y)
     if y.isnull().any():
-        if not np.issubdtype(y.dtype, np.number) or y.dtype == 'object' or y.dtype.name == 'category':
+        if not is_numeric_dtype(y.dtype):
             y_imputer = SimpleImputer(strategy='most_frequent')
-            y_imputed = y_imputer.fit_transform(y.values.reshape(-1, 1)).ravel()
+            y_values = y.to_numpy(dtype=object, na_value=np.nan)
+            y_imputed = y_imputer.fit_transform(y_values.reshape(-1, 1)).ravel()
             y = pd.Series(y_imputed, name=target_col, index=df_clean.index)
         else:
             y_imputer = SimpleImputer(strategy='median')
-            y_imputed = y_imputer.fit_transform(y.values.reshape(-1, 1)).ravel()
+            y_values = y.to_numpy(dtype=float, na_value=np.nan)
+            y_imputed = y_imputer.fit_transform(y_values.reshape(-1, 1)).ravel()
             y = pd.Series(y_imputed, name=target_col, index=df_clean.index)
             
     # 4. Encode target if it is categorical (string, object, category)
     target_encoder = None
     y_encoded = y.copy()
-    if not np.issubdtype(y.dtype, np.number) or y.dtype == 'object' or y.dtype.name == 'category':
+    if not is_numeric_dtype(y.dtype):
         target_encoder = LabelEncoder()
         y_encoded = pd.Series(target_encoder.fit_transform(y.astype(str)), name=target_col, index=df_clean.index)
         

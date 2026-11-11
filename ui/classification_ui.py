@@ -26,7 +26,7 @@ from core.ml_engine import run_classification_benchmark
 def clear_clf_state():
     """Callback to purge cached models when configuration changes."""
     for key in list(st.session_state.keys()):
-        if key.startswith("clf_"):
+        if key.startswith("clf_model_cache_"):
             del st.session_state[key]
 
 def show_classification_workspace():

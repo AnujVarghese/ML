@@ -47,6 +47,18 @@ def show_regression_workspace():
         key="reg_source_radio",
         on_change=clear_reg_state
     )
+
+    uploaded_file = None
+    if reg_source == "Upload CSV/Excel":
+        st.sidebar.markdown("**Dataset required**")
+        uploaded_file = st.sidebar.file_uploader(
+            "Choose a CSV or Excel dataset",
+            type=["csv", "xlsx", "xls"],
+            key="reg_file_uploader",
+            on_change=clear_reg_state
+        )
+        if uploaded_file is None:
+            st.sidebar.warning("Upload a dataset to continue.")
     
     # Advanced Model Settings
     st.sidebar.markdown("## ⚙️ Model Parameters")
@@ -83,13 +95,6 @@ def show_regression_workspace():
     
     # Handle Data Loading
     if reg_source == "Upload CSV/Excel":
-        st.sidebar.markdown("**Dataset required**")
-        uploaded_file = st.sidebar.file_uploader(
-            "Choose a CSV or Excel dataset",
-            type=["csv", "xlsx", "xls"],
-            key="reg_file_uploader",
-            on_change=clear_reg_state
-        )
         if uploaded_file is not None:
             try:
                 # Load custom uploaded dataset via core engine
@@ -97,7 +102,6 @@ def show_regression_workspace():
             except Exception as e:
                 st.error(f"Error loading uploaded file: {e}")
         else:
-            st.sidebar.warning("Upload a dataset to continue.")
             st.warning("A CSV or Excel dataset is required to continue in upload mode.")
     else:
         # Load built-in fallback dataset (California Housing or Diabetes) via core engine

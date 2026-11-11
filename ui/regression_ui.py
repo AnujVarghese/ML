@@ -83,8 +83,9 @@ def show_regression_workspace():
     
     # Handle Data Loading
     if reg_source == "Upload CSV/Excel":
+        st.sidebar.markdown("**Dataset required**")
         uploaded_file = st.sidebar.file_uploader(
-            "Upload CSV or Excel file",
+            "Choose a CSV or Excel dataset",
             type=["csv", "xlsx", "xls"],
             key="reg_file_uploader",
             on_change=clear_reg_state
@@ -96,7 +97,8 @@ def show_regression_workspace():
             except Exception as e:
                 st.error(f"Error loading uploaded file: {e}")
         else:
-            st.info("👋 Upload a CSV or Excel file in the sidebar, or switch to **'Built-in Fallback'** to test the app instantly!")
+            st.sidebar.warning("Upload a dataset to continue.")
+            st.warning("A CSV or Excel dataset is required to continue in upload mode.")
     else:
         # Load built-in fallback dataset (California Housing or Diabetes) via core engine
         df, fallback_target = load_fallback_data("california_housing")

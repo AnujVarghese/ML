@@ -27,7 +27,7 @@ from core.ml_engine import run_regression_benchmark
 def clear_reg_state():
     """Callback to purge cached models when configuration changes."""
     for key in list(st.session_state.keys()):
-        if key.startswith("reg_"):
+        if key.startswith("reg_model_cache_"):
             del st.session_state[key]
 
 def show_regression_workspace():
